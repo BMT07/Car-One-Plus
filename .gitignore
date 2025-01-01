@@ -1,5 +1,6 @@
-*/__pycache__/
+__pycache__/
 *.pyc
 .env
-CarOnePlus_Backend/uploads
-CarOnePlus_Backend/env
+requirements.txt
+uploads/
+env/
