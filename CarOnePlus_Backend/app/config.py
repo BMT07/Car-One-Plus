@@ -10,3 +10,7 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "jwt-secret")
+
+    # Répertoire pour les images
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
