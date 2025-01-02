@@ -25,7 +25,9 @@ def create_app():
     # Enregistrer les blueprints
     from app.routes import auth
     from app.routes import vehicles
+    from app.routes import reservations
     app.register_blueprint(auth)
     app.register_blueprint(vehicles)
+    app.register_blueprint(reservations)
 
     return app
