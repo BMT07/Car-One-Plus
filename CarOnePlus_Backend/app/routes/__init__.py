@@ -1,3 +1,9 @@
 from .auth import bp as auth
 from .vehicles import bp as vehicles
 from .reservations import bp as reservations
+from .payment import bp as payments
+from .geo import bp as geo
+from .review import bp as reviews
+from .incidents import bp as incidents
+from .support import bp as support
+from .insurance import bp as insurance
