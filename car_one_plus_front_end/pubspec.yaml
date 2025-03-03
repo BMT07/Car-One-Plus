@@ -1,0 +1,66 @@
+name: car_one_plus_front_end
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.3.3
+
+  pin_code_fields: ^8.0.1
+
+  flutter_animate: 4.5.0
+  flutter_cache_manager: 3.4.1
+  flutter_plugin_android_lifecycle: 2.0.20
+  flutter_rating_bar: 4.0.1
+  flutter_svg: 2.0.10+1
+  font_awesome_flutter: 10.7.0
+  image_picker: ^1.1.2
+
+  # Communication avec le backend
+  http: ^1.2.2
+
+  # Gestion d’état
+  provider: ^6.1.2 # ou
+  # riverpod: ^2.2.0
+
+  # Polices personnalisées
+  google_fonts: ^6.2.1
+
+  # Notifications locales
+  #flutter_local_notifications: ^18.0.1
+
+  # Géolocalisation
+  #google_maps_flutter: ^2.10.0 # ou
+  # flutter_map: ^3.8.0
+
+  # Remplacez stripe_flutter par flutter_stripe
+  flutter_stripe: ^11.3.0 # ou
+  # pay: ^1.0.11
+
+  # Autres utiles pour un projet mobile
+  # shared_preferences: ^2.3.5  # Stockage local pour les données utilisateur
+  # flutter_svg: ^2.0.7        # Gestion des fichiers SVG (icônes vectorielles)
+  # dio: ^5.1.0                # Alternative à `http` pour des requêtes API avancées
+  # cached_network_image: ^3.2.3 # Chargement des images réseau avec mise en cache
+  # connectivity_plus: ^6.1.1  # Vérification de l'état de la connexion internet
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.png
+    - assets/images/intro_background.png
+    - assets/images/google_logo.png
+    - assets/images/ferrari.png
