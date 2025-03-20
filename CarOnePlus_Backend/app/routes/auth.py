@@ -7,7 +7,7 @@ from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer
 from app import mail
 import random
-
+from datetime import timedelta
 
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -216,7 +216,7 @@ def login():
     if not user.is_active:  # ✅ Vérifier si l'utilisateur est activé
         return jsonify({"message": "Please activate your account via email."}), 403
 
-    access_token = create_access_token(identity=str(user.id))
+    access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(hours=24))
     
     return jsonify({
         "access_token": access_token,

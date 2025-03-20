@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Reservation, Vehicle, VehicleImage, User, db
+from datetime import datetime
+from dateutil import parser  # Ajoute cette librairie pour gérer plusieurs formats
 
 bp = Blueprint("reservations", __name__, url_prefix="/reservations")
 
@@ -14,40 +16,62 @@ def create_reservation():
     if not data.get("vehicle_id") or not data.get("start_date") or not data.get("end_date"):
         return jsonify({"message": "Vehicle ID, start date, and end date are required"}), 400
 
-    # Récupérer le véhicule
-    vehicle = Vehicle.query.get(data["vehicle_id"])
+    # Vérification et conversion des dates
+    # try:
+    #     start_date = datetime.strptime(data["start_date"], "%Y-%m-%d")
+    #     end_date = datetime.strptime(data["end_date"], "%Y-%m-%d")
+    # except ValueError:
+    #     return jsonify({"message": "Invalid date format. Use YYYY-MM-DD"}), 400
+
+    try:
+     start_date = parser.isoparse(data["start_date"]).date()  # Convertir ISO 8601 en date
+     end_date = parser.isoparse(data["end_date"]).date()
+    except ValueError:
+        return jsonify({"message": "Invalid date format. Use ISO 8601 or YYYY-MM-DD"}), 400
+
+    # Vérifier que start_date < end_date
+    if start_date >= end_date:
+        return jsonify({"message": "Start date must be before end date"}), 400
+
+    # Vérifier si le véhicule existe
+    vehicle = Vehicle.query.filter_by(id=data["vehicle_id"]).first()
     if not vehicle:
         return jsonify({"message": "Vehicle not found"}), 404
 
-    # Vérifier la disponibilité
+    # Récupérer toutes les réservations existantes pour ce véhicule
     existing_reservations = Reservation.query.filter(
         Reservation.vehicle_id == vehicle.id,
-        Reservation.status.in_(["pending", "confirmed", "in_progress"]),
-        Reservation.start_date <= data["end_date"],
-        Reservation.end_date >= data["start_date"]
+        Reservation.start_date <= end_date,
+        Reservation.end_date >= start_date
     ).all()
-    if existing_reservations:
-        return jsonify({"message": "Vehicle is not available for the selected dates"}), 400
 
-    # Créer la réservation
-    reservation = Reservation(
+    for reservation in existing_reservations:
+        if reservation.status == "CONFIRMER":
+            return jsonify({"message": "Vehicle is already booked for the selected dates"}), 400
+        elif reservation.status == "EN ATTENTE":
+            # Vérifier si les dates se chevauchent
+            if not (end_date < reservation.start_date or start_date > reservation.end_date):
+                return jsonify({"message": "A pending reservation already exists for these dates"}), 400
+
+    # Si tout est bon, créer la réservation
+    new_reservation = Reservation(
         user_id=user_id,
         vehicle_id=vehicle.id,
-        start_date=data["start_date"],
-        end_date=data["end_date"],
-        status="pending"
+        start_date=start_date,
+        end_date=end_date,
+        status="EN ATTENTE"
     )
-    db.session.add(reservation)
+    db.session.add(new_reservation)
     db.session.commit()
 
     return jsonify({
         "message": "Reservation created successfully",
         "reservation": {
-            "id": reservation.id,
-            "vehicle_id": reservation.vehicle_id,
-            "start_date": reservation.start_date,
-            "end_date": reservation.end_date,
-            "status": reservation.status
+            "id": new_reservation.id,
+            "vehicle_id": new_reservation.vehicle_id,
+            "start_date": new_reservation.start_date.strftime("%Y-%m-%d"),
+            "end_date": new_reservation.end_date.strftime("%Y-%m-%d"),
+            "status": new_reservation.status
         }
     }), 201
 
@@ -62,8 +86,8 @@ def get_reservations():
         {
             "id": r.id,
             "vehicle_id": r.vehicle_id,
-            "start_date": r.start_date,
-            "end_date": r.end_date,
+            "start_date": r.start_date.strftime("%Y-%m-%d"),
+            "end_date": r.end_date.strftime("%Y-%m-%d"),
             "status": r.status
         } for r in reservations
     ]), 200
@@ -73,56 +97,42 @@ def get_reservations():
 @jwt_required()
 def update_reservation_status(reservation_id):
     user_id = get_jwt_identity()
-    print(f"Debug: Authenticated User ID: {user_id}")  # Étape 1 : Vérifier l'utilisateur authentifié
-
     data = request.get_json()
-    print(f"Debug: Received Data - {data}")  # Étape 2 : Vérifier les données reçues
 
     # Vérifier si le statut est fourni
     if not data.get("status"):
-        print("Debug: Missing status in request.")
         return jsonify({"message": "Status is required"}), 400
 
     # Vérifier que le statut est valide
-    valid_statuses = ["confirmed", "in_progress", "completed", "cancelled"]
+    valid_statuses = ["EN ATTENTE", "CONFIRMER"]
     if data["status"] not in valid_statuses:
-        print(f"Debug: Invalid status '{data['status']}' provided.")
         return jsonify({"message": f"Invalid status. Valid statuses are: {valid_statuses}"}), 400
 
     # Récupérer la réservation
     reservation = Reservation.query.get(reservation_id)
     if not reservation:
-        print(f"Debug: Reservation ID {reservation_id} not found.")
         return jsonify({"message": "Reservation not found"}), 404
-
-    print(f"Debug: Reservation Details - {reservation}")  # Étape 3 : Vérifier la réservation
 
     # Récupérer le véhicule
     vehicle = Vehicle.query.get(reservation.vehicle_id)
     if not vehicle:
-        print(f"Debug: Vehicle ID {reservation.vehicle_id} not found.")
         return jsonify({"message": "Vehicle not found"}), 404
-
-    print(f"Debug: Vehicle Details - ID: {vehicle.id}, Owner ID: {vehicle.owner_id}")  # Étape 4 : Vérifier le véhicule
 
     # Vérifier si l'utilisateur est le propriétaire du véhicule
     if int(vehicle.owner_id) != int(user_id):
-        print(f"Debug: Owner mismatch - Authenticated User ID: {user_id}, Vehicle Owner ID: {vehicle.owner_id}")
         return jsonify({"message": "Unauthorized to modify this reservation"}), 403
 
     # Modifier le statut de la réservation
     reservation.status = data["status"]
     db.session.commit()
 
-    print(f"Debug: Reservation status updated to {data['status']}")  # Étape 5 : Vérifier la mise à jour
-
     return jsonify({
         "message": "Reservation status updated successfully",
         "reservation": {
             "id": reservation.id,
             "vehicle_id": reservation.vehicle_id,
-            "start_date": reservation.start_date,
-            "end_date": reservation.end_date,
+            "start_date": reservation.start_date.strftime("%Y-%m-%d"),
+            "end_date": reservation.end_date.strftime("%Y-%m-%d"),
             "status": reservation.status
         }
     }), 200
@@ -145,8 +155,8 @@ def get_reservations_for_owner():
             "id": r.id,
             "vehicle_id": r.vehicle_id,
             "vehicle_title": Vehicle.query.get(r.vehicle_id).title,
-            "start_date": r.start_date,
-            "end_date": r.end_date,
+            "start_date": r.start_date.strftime("%Y-%m-%d"),
+            "end_date": r.end_date.strftime("%Y-%m-%d"),
             "status": r.status,
             "user_id": r.user_id
         } for r in reservations
