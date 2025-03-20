@@ -24,12 +24,18 @@ dependencies:
   # Communication avec le backend
   http: ^1.2.2
 
+  webview_flutter: ^4.2.0
+
   # Gestion d’état
   provider: ^6.1.2 # ou
   # riverpod: ^2.2.0
 
   # Polices personnalisées
   google_fonts: ^6.2.1
+
+  intl: ^0.20.2
+
+  carousel_slider: ^5.0.0
 
   # Notifications locales
   #flutter_local_notifications: ^18.0.1

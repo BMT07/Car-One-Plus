@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'reservation_details_screen.dart';
+//import 'reservation_details_screen.dart';
 import '../providers/reservation_provider.dart';
+import 'reservation_owner_details_screen.dart';
 
-class ReservationScreen extends StatefulWidget {
-  const ReservationScreen({Key? key}) : super(key: key);
+class ReservationOwnerScreen extends StatefulWidget {
+  const ReservationOwnerScreen({Key? key}) : super(key: key);
 
   @override
-  _ReservationScreenState createState() => _ReservationScreenState();
+  _ReservationOwnerScreenState createState() => _ReservationOwnerScreenState();
 }
 
-class _ReservationScreenState extends State<ReservationScreen> {
+class _ReservationOwnerScreenState extends State<ReservationOwnerScreen> {
   late ReservationProvider _provider;
 
   @override
@@ -21,8 +22,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 
   Future<void> _loadReservations() async {
-    await _provider.updateReservations(); // Récupérer les dernières réservations
-    await _provider.loadReservations();
+    await _provider.getReservationsforOwner(); // Récupérer les dernières réservations
+    await _provider.loadOwnerReservations();
     if (mounted) {
       setState(() {}); // Rafraîchir l'interface
     }
@@ -50,7 +51,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 📌 Section des réservations en attente
-                  if (provider.pendingReservations.isNotEmpty) ...[
+                  if (provider.pendingReservationsOwner.isNotEmpty) ...[
                     const Text(
                       "Réservations en attente",
                       style: TextStyle(
@@ -63,19 +64,19 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: provider.pendingReservations.length,
+                      itemCount: provider.pendingReservationsOwner.length,
                       itemBuilder: (context, index) {
-                        final reservation = provider.pendingReservations[index];
+                        final reservation = provider.pendingReservationsOwner[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                              builder: (context) => ReservationDetailsScreen(reservation: reservation),
-                            ),
-                          );
+                                builder: (context) => ReservationOwnerDetailsScreen(reservation: reservation),
+                              ),
+                            );
                           },
-                          child: ReservationCard(
+                          child: ReservationOwnerCard(
                             reservation:reservation,
                             isPending: true,
                           ),
@@ -86,7 +87,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   ],
 
                   // 📌 Section des réservations confirmées
-                  if (provider.confirmedReservations.isNotEmpty) ...[
+                  if (provider.confirmedReservationsOwner.isNotEmpty) ...[
                     const Text(
                       "Réservations confirmées",
                       style: TextStyle(
@@ -99,19 +100,19 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: provider.confirmedReservations.length,
+                      itemCount: provider.confirmedReservationsOwner.length,
                       itemBuilder: (context, index) {
-                        final reservation = provider.confirmedReservations[index];
+                        final reservation = provider.confirmedReservationsOwner[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ReservationDetailsScreen(reservation: reservation),
+                                builder: (context) => ReservationOwnerDetailsScreen(reservation: reservation),
                               ),
                             );
                           },
-                          child: ReservationCard(
+                          child: ReservationOwnerCard(
                             reservation:reservation,
                             isPending: false,
                           ),
@@ -121,8 +122,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   ],
 
                   // 📌 Aucun résultat
-                  if (provider.pendingReservations.isEmpty &&
-                      provider.confirmedReservations.isEmpty)
+                  if (provider.pendingReservationsOwner.isEmpty &&
+                      provider.confirmedReservationsOwner.isEmpty)
                     const Center(
                       child: Text(
                         "Aucune réservation pour le moment.",
@@ -139,11 +140,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 }
 
-class ReservationCard extends StatelessWidget {
+class ReservationOwnerCard extends StatelessWidget {
   final Map<String, dynamic> reservation;
   final bool isPending;
 
-  const ReservationCard({
+  const ReservationOwnerCard({
     Key? key,
     required this.reservation,
     required this.isPending,

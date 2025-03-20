@@ -14,6 +14,7 @@ import 'screens/car_details_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'providers/user_provider.dart';
 import 'providers/vehicle_provider.dart';
+import 'providers/reservation_provider.dart';
 
 void main() {
   runApp(
@@ -21,6 +22,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context)=>VehicleProvider()),
+        ChangeNotifierProvider(create: (context)=>ReservationProvider()),
+
       ],
       child: MyApp(),
     ),
