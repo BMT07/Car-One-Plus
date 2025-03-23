@@ -59,6 +59,9 @@ class Vehicle(db.Model):
     type_de_carburant = db.Column(db.String(100), nullable=True)
     localisation = db.Column(db.String(100), nullable=False) # addresse textuelle
     puissance = db.Column(db.String(15), nullable=True) 
+    transmission = db.Column(db.String(20), nullable=True)
+    vitesse = db.Column(db.String(15), nullable=True)
+    nbreSieges = db.Column(db.Integer,nullable=True)
     available = db.Column(db.Boolean, default=True)
     lat = db.Column(db.Float, nullable=True)  # Latitude
     lng = db.Column(db.Float, nullable=True)  # Longitude
@@ -83,7 +86,7 @@ class Reservation(db.Model):
     vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicle.id', ondelete='CASCADE'), nullable=False)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
-    status = db.Column(db.String(20), default="pending")  # Statuts : pending, confirmed, in_progress, completed, cancelled
+    status = db.Column(db.String(20), default="EN ATTENTE")  # Statuts : pending, confirmed, in_progress, completed, cancelled
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     user = db.relationship('User', backref=db.backref('user-reservations', cascade='all, delete-orphan'))

@@ -164,8 +164,7 @@ class _EditVehicleDetailsScreenState extends State<EditVehicleDetailsScreen> {
 
     Navigator.pop(context); // Ferme EditVehicleDetailsScreen et retourne à EditVehicleScreen
 
-
-
+    
   }
 
   @override

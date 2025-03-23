@@ -29,8 +29,8 @@ class EditVehicleScreenState extends State<EditVehicleScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<VehicleProvider>(context, listen: false).updateVehicles();
-    Provider.of<VehicleProvider>(context, listen: false).loadVehicles();
+    Provider.of<VehicleProvider>(context, listen: false).getOwnerVehicles();
+    Provider.of<VehicleProvider>(context, listen: false).loadOwnerVehicles();
   }
 
   @override
@@ -64,9 +64,9 @@ class EditVehicleScreenState extends State<EditVehicleScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
-          itemCount: vehicleProvider.vehicles.length,
+          itemCount: vehicleProvider.vehiclesOfOwner.length,
           itemBuilder: (context, index) {
-            final Map<String, dynamic> vehicle = vehicleProvider.vehicles[index];
+            final Map<String, dynamic> vehicle = vehicleProvider.vehiclesOfOwner[index];
             String? imageUrl;
             if (vehicle["images"] is List && (vehicle["images"] as List).isNotEmpty) {
               imageUrl = vehicle["images"][0];

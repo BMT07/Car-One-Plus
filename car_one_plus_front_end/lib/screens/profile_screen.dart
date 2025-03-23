@@ -7,6 +7,7 @@ import 'settings_screen.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
 import '../providers/user_provider.dart';
+import 'reservation_owner_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -172,6 +173,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         MaterialPageRoute(builder: (context) => EditVehicleScreen()),
                       ),
                     ),
+                  _buildOption(
+                    context,
+                    icon: Icons.book_online,
+                    label: 'Gestion des Réservations',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ReservationOwnerScreen()),
+                    ),
+                  ),
                   _buildOption(
                     context,
                     icon: Icons.settings,

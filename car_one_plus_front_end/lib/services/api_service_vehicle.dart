@@ -5,7 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
 class ApiServiceVehicle {
+<<<<<<< HEAD
   final String baseUrl = "http://10.42.41.211:5000";
+=======
+  final String baseUrl = "http://192.168.42.156:5000";
+>>>>>>> b19f915f2b83fb40b77bd1c288da10f0e7c3a9f6
   ApiService apiService = ApiService();
 
   // 🔹 Récupérer la liste des véhicules
@@ -40,18 +44,40 @@ class ApiServiceVehicle {
     }
   }
 
+  // 🔹 Récupérer la liste des véhicules disponibles
+  Future<List<dynamic>> getVehiclesOfOwner() async {
+    final url = Uri.parse("$baseUrl/vehicles/my_vehicles");
+    final token = await apiService.getToken();
+    try {
+      final response = await http.get(
+        url,
+          headers: {
+            "Authorization": "Bearer $token",
+          }
+      );
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return  jsonData["vehicles"] ?? [];
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
   // 🔹 Récupérer un véhicule par son ID
-  Future<Map<String, dynamic>?> getVehicleById(int vehicleId) async {
+  Future<Map<String, dynamic>> getVehicleById(int vehicleId) async {
     final url = Uri.parse("$baseUrl/vehicles/$vehicleId");
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        return null;
+        return {"error": jsonDecode(response.body)["message"]};
       }
     } catch (e) {
-      return null;
+      return {"error": "Erreur: $e"};
     }
   }
 

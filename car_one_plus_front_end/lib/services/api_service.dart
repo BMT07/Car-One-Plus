@@ -4,7 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
+<<<<<<< HEAD
   final String baseUrl = "http://10.42.41.211:5000";
+=======
+  final String baseUrl = "http://192.168.42.156:5000";
+>>>>>>> b19f915f2b83fb40b77bd1c288da10f0e7c3a9f6
 
   // Connexion de l'utilisateur
   Future<Map<String, dynamic>> login(String email, String password) async {

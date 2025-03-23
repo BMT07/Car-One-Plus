@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Payment, Reservation, Vehicle, VehicleImage, User, db
 
@@ -16,8 +16,11 @@ bp = Blueprint("payments", __name__, url_prefix="/payments")
 @bp.route("/create-session", methods=["POST"])
 @jwt_required()
 def create_payment_session():
+
+    print("Creating payment session...")
     user_id = int(get_jwt_identity())
     data = request.get_json()
+    print(f"Received data: {data}")
     reservation_id = data.get("reservation_id")
     amount = data.get("amount")
 
@@ -38,8 +41,8 @@ def create_payment_session():
             "quantity": 1,
         }],
         mode="payment",
-        success_url="http://127.0.0.1:5000/payments/success",
-        cancel_url="http://127.0.0.1:5000/payments/cancel",
+        success_url="http://192.168.54.149:5000/payments/success",
+        cancel_url="http://192.168.54.149:5000/payments/cancel",
         metadata={
             "reservation_id": reservation_id,
             "user_id": user_id
@@ -152,21 +155,7 @@ def webhook():
             print('⚠️  Webhook signature verification failed.' + str(e))
             return jsonify(success=False)
 
-    # Handle the event
-    # if event and event['type'] == 'payment_intent.succeeded':
-    #     payment_intent = event['data']['object']  # contains a stripe.PaymentIntent
-    #     print('Payment for {} succeeded'.format(payment_intent['amount']))
-    #     # Then define and call a method to handle the successful payment intent.
-    #     # handle_payment_intent_succeeded(payment_intent)
-    # elif event['type'] == 'payment_method.attached':
-    #     payment_method = event['data']['object']  # contains a stripe.PaymentMethod
-    #     # Then define and call a method to handle the successful attachment of a PaymentMethod.
-    #     # handle_payment_method_attached(payment_method)
-    # else:
-    #     # Unexpected event type
-    #     print('Unhandled event type {}'.format(event['type']))
-
-    # return jsonify(success=True)
+   
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
 
@@ -177,6 +166,10 @@ def webhook():
         user_id = session["metadata"]["user_id"]
         amount = session["amount_total"] / 100  # Convertir en euros
 
+        reservation = Reservation.query.filter_by(id=reservation_id).first()
+        vehicleId = int(reservation.vehicle_id)
+        vehicle = Vehicle.query.filter_by(id=vehicleId).first()
+
         # Enregistrer le paiement dans la base de données
         payment = Payment(
             reservation_id=reservation_id,
@@ -184,8 +177,14 @@ def webhook():
             amount=amount,
             status="succeeded"
         )
+
+        reservation.status = "CONFIRMER"
+        vehicle.available = False
+        
         db.session.add(payment)
         db.session.commit()
+
+        
 
         print(f"Payment recorded for reservation {reservation_id} by user {user_id}")
 

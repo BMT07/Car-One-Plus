@@ -8,6 +8,7 @@ import '../services/api_service_vehicle.dart';
 class VehicleProvider extends ChangeNotifier {
   bool isLoading = false;
   List<dynamic> vehicles = [];
+  List<dynamic> vehiclesOfOwner = [];
 
   final ApiServiceVehicle _apiServiceVehicle = ApiServiceVehicle();
 
@@ -38,6 +39,38 @@ class VehicleProvider extends ChangeNotifier {
       vehicles = response;
 
       await prefs.setString('vehicles', await _encodeJson(vehicles));
+
+      notifyListeners();
+    }
+  }
+
+  // ✅ Charger la liste des véhicules depuis SharedPreferences
+  Future<void> loadOwnerVehicles() async {
+    isLoading = true;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    final vehiclesData = prefs.getString('OwnerVehicles');
+
+    if (vehiclesData != null) {
+      vehiclesOfOwner = List<dynamic>.from(await _decodeJson(vehiclesData));
+    } else {
+      vehiclesOfOwner = [];
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  // ✅ Mettre à jour la liste des véhicules en récupérant depuis l'API
+  Future<void> getOwnerVehicles() async {
+    final response = await _apiServiceVehicle.getVehiclesOfOwner();
+
+    if (response.isNotEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      vehiclesOfOwner = response;
+      print(vehiclesOfOwner);
+      await prefs.setString('OwnerVehicles', await _encodeJson(vehiclesOfOwner));
 
       notifyListeners();
     }
@@ -88,6 +121,22 @@ class VehicleProvider extends ChangeNotifier {
     notifyListeners();
 
     return response;
+  }
+
+  Future<Map<String,dynamic>> getVehicleById(int vehicleId) async{
+
+    isLoading = true;
+    notifyListeners();
+
+    final response = await _apiServiceVehicle.getVehicleById(vehicleId);
+
+    print(response);
+
+    isLoading = false;
+    notifyListeners();
+
+    return response;
+
   }
 
   // ✅ Modifier un véhicule
