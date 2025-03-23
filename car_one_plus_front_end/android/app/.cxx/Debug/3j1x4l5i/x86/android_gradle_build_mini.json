@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "C:\\Users\\bakar\\OneDrive\\Desktop\\flutter\\packages\\flutter_tools\\gradle\\src\\main\\groovy\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\bakar\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\bakar\\OneDrive\\Desktop\\CarOnePlus\\Car-One-Plus\\car_one_plus_front_end\\android\\app\\.cxx\\Debug\\3j1x4l5i\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\bakar\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\bakar\\OneDrive\\Desktop\\CarOnePlus\\Car-One-Plus\\car_one_plus_front_end\\android\\app\\.cxx\\Debug\\3j1x4l5i\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

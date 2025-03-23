@@ -1,0 +1,2 @@
+C:/Users/bakar/OneDrive/Desktop/CarOnePlus/Car-One-Plus/car_one_plus_front_end/android/app/.cxx/Debug/3j1x4l5i/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/bakar/OneDrive/Desktop/CarOnePlus/Car-One-Plus/car_one_plus_front_end/android/app/.cxx/Debug/3j1x4l5i/armeabi-v7a/CMakeFiles/rebuild_cache.dir

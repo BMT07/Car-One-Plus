@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 
 class ApiServiceVehicle {
-  final String baseUrl = "http://192.168.54.149:5000";
+  final String baseUrl = "http://10.42.41.211:5000";
   ApiService apiService = ApiService();
 
   // 🔹 Récupérer la liste des véhicules
