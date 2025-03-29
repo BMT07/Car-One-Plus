@@ -247,6 +247,7 @@ def profile():
     photo_url = url_for('auth.get_image', filename=user_image.file_name, _external=True) if user_image else None
 
     return jsonify({
+        "id": user.id,
         "email": user.email,
         "prenom": user.prenom,
         "nom": user.nom,

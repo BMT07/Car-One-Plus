@@ -161,3 +161,36 @@ def get_reservations_for_owner():
             "user_id": r.user_id
         } for r in reservations
     ]), 200
+
+# 4. Supprimer une reservation (propriétaire uniquement)
+@bp.route("delete/by_reservation_owner/<int:reservation_id>", methods=["DELETE"])
+@jwt_required()
+def delete_reservation_by_owner(reservation_id):
+    user_id = get_jwt_identity()
+
+    reservation = Reservation.query.filter_by(id=reservation_id, user_id=user_id).first()
+    if not reservation:
+        return jsonify({"message": "reservation not found or unauthorized"}), 404
+
+    db.session.delete(reservation)
+    db.session.commit()
+    return jsonify({"message": "reservation deleted successfully!"}), 200
+
+
+# 4. Supprimer une reservation (propriétaire du vehiclue reservar uniquement)
+@bp.route("delete/by_vehicle_owner/<int:reservation_id>", methods=["DELETE"])
+@jwt_required()
+def delete_reservation_by_vehiccle_owner(reservation_id):
+    user_id = get_jwt_identity()
+
+    reservation = Reservation.query.filter_by(id=reservation_id).first()
+    if not reservation:
+        return jsonify({"message": "reservation not found or unauthorized"}), 404
+    
+    vehicle = Vehicle.query.filter_by(id=reservation.vehicle_id, owner_id=user_id).first()
+    if not vehicle:
+        return jsonify({"message": "Your not vehicle owner"}), 404
+
+    db.session.delete(reservation)
+    db.session.commit()
+    return jsonify({"message": "reservation deleted successfully!"}), 200
