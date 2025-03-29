@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart'; // Ajout de l'import pour Provider
 import '../providers/vehicle_provider.dart'; // Ajustez le chemin d'importation selon votre structure
 import 'car_reservation_screen.dart';
+import 'review_screen.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> vehicle;
@@ -47,6 +48,20 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
+          IconButton(
+            icon: Icon(Icons.comment),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VehicleReviewsScreen(
+                    vehicleId: widget.vehicle["id"],
+                    vehicleName: widget.vehicle["title"],
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.favorite_border, color: Colors.red),
             onPressed: () {

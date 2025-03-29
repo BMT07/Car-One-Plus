@@ -142,12 +142,32 @@ class ReservationProvider extends ChangeNotifier {
     return response;
   }
 
-  /* ✅ Supprimer une réservation
-  Future<Map<String, dynamic>> deleteReservation(int reservationId) async {
+  //✅ Supprimer une réservation
+
+  Future<Map<String, dynamic>> deleteReservationByVehicleOwner(int reservationId) async {
     isLoading = true;
     notifyListeners();
 
-    final response = await _apiServiceReservation.cancelReservation(reservationId);
+    final response = await _apiServiceReservation.deleteReservationByVehicleOwner(reservationId);
+
+    if (!response.containsKey("error")) {
+      ownerReservations.removeWhere((reservation) => reservation["id"] == reservationId);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('ownerReservations', await _encodeJson(ownerReservations));
+    }
+
+    isLoading = false;
+    notifyListeners();
+
+    return response;
+  }
+
+  Future<Map<String, dynamic>> deleteReservationByOwner(int reservationId) async {
+    isLoading = true;
+    notifyListeners();
+
+    final response = await _apiServiceReservation.deleteReservationByOwner(reservationId);
 
     if (!response.containsKey("error")) {
       reservations.removeWhere((reservation) => reservation["id"] == reservationId);
@@ -160,7 +180,7 @@ class ReservationProvider extends ChangeNotifier {
     notifyListeners();
 
     return response;
-  }*/
+  }
 
   // 🔹 Helper pour encoder/décoder JSON proprement
   Future<String> _encodeJson(List<dynamic> data) async {

@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 class UserProvider extends ChangeNotifier {
 
   bool isLoading = false;
+  int userId = 0;
   String userPrenom = "";
   String userNom = "";
   String userEmail = "";
@@ -21,6 +22,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getInt('user_id') ?? 0;
     userPrenom = prefs.getString('user_prenom') ?? "Utilisateur";
     userNom = prefs.getString('user_nom') ?? "";
     userEmail = prefs.getString('user_email') ?? "Email inconnu";
@@ -39,6 +41,7 @@ class UserProvider extends ChangeNotifier {
     if (!response.containsKey("error")) {
       final prefs = await SharedPreferences.getInstance();
 
+      userId = response["id"];
       userPrenom = response["prenom"] ?? userPrenom;
       userNom = response["nom"] ?? userNom;
       userEmail = response["email"] ?? userEmail;
@@ -46,6 +49,7 @@ class UserProvider extends ChangeNotifier {
       userTelephone = response["telephone"] ?? userTelephone;
       userPhoto = response["photo_url"] ?? userPhoto;
 
+      await prefs.setInt('user_id', userId);
       await prefs.setString('user_prenom', userPrenom);
       await prefs.setString('user_nom', userNom);
       await prefs.setString('user_email', userEmail);

@@ -3,6 +3,7 @@ import 'dart:async';
 import '../services/vehicle_search_service.dart';
 import '../models/vehicle.dart';
 import 'car_details_screen.dart';
+import 'main_screen.dart';
 // Importez votre service de recherche et votre modèle de véhicule
 // import 'package:votre_app/services/vehicle_search_service.dart';
 // import 'package:votre_app/models/vehicle.dart';
@@ -304,9 +305,14 @@ class _SearchScreenState extends State<SearchScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MainScreen(initialIndex: 0),
+              ),
+            );
           },
         ),
         title: const Text(

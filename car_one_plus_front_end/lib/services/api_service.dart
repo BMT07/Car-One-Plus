@@ -86,6 +86,7 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return {
+          "id": data["id"],
           "email": data["email"],
           "prenom": data["prenom"],
           "nom": data["nom"],
@@ -294,18 +295,59 @@ class ApiService {
   // Sauvegarder le token JWT localement
   Future<void> _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('jwt_token', token);
+
+    try {
+      // Décoder le token pour obtenir sa date d'expiration
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        throw Exception('Invalid token format');
+      }
+
+      // Décoder la partie payload du token JWT
+      final payload = json.decode(
+          ascii.decode(
+              base64.decode(base64.normalize(parts[1]))
+          )
+      );
+
+      // La date d'expiration est généralement en secondes depuis l'epoch
+      final expiryTimestamp = payload['exp'] * 1000; // Convertir en millisecondes
+
+      await prefs.setString('jwt_token', token);
+      await prefs.setInt('jwt_token_expiry', expiryTimestamp);
+    } catch (e) {
+      // En cas d'erreur de décodage, supprimer le token
+      await _clearToken();
+    }
   }
 
   // Récupérer le token JWT
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('jwt_token');
+
+    final token = prefs.getString('jwt_token');
+    final expiryTimestamp = prefs.getInt('jwt_token_expiry');
+
+    if (token == null || expiryTimestamp == null) {
+      return null;
+    }
+
+    // Vérifier si le token est expiré
+    final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
+
+    if (currentTimestamp >= expiryTimestamp) {
+      // Token expiré, le supprimer
+      await _clearToken();
+      return null;
+    }
+
+    return token;
   }
 
   // Effacer le token JWT
   Future<void> _clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
+    await prefs.remove('jwt_token_expiry');
   }
 }

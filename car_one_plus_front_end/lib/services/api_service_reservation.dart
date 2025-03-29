@@ -133,4 +133,59 @@ class ApiReservationService {
       return {"error": "Une erreur est survenue : $e"};
     }
   }
+
+  // 🔹 Supprimer une reservation par le reserveur
+  Future<Map<String, dynamic>> deleteReservationByOwner(int reservationId) async {
+    final url = Uri.parse("$baseUrl/reservations/delete/by_reservation_owner/$reservationId");
+    final token = await apiService.getToken();
+
+    if (token == null) {
+      return {"error": "Token manquant. Veuillez vous reconnecter."};
+    }
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return {"message": "Véhicule supprimé avec succès"};
+      } else {
+        return {"error": jsonDecode(response.body)["message"]};
+      }
+    } catch (e) {
+      return {"error": "Erreur: $e"};
+    }
+  }
+
+  // 🔹 Supprimer une Reservation par le proprio du vehicule
+  Future<Map<String, dynamic>> deleteReservationByVehicleOwner(int reservationId) async {
+    final url = Uri.parse("$baseUrl/reservations/delete/by_vehicle_owner/$reservationId");
+    final token = await apiService.getToken();
+
+    if (token == null) {
+      return {"error": "Token manquant. Veuillez vous reconnecter."};
+    }
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return {"message": "Véhicule supprimé avec succès"};
+      } else {
+        return {"error": jsonDecode(response.body)["message"]};
+      }
+    } catch (e) {
+      return {"error": "Erreur: $e"};
+    }
+  }
+
 }
