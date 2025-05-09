@@ -41,8 +41,8 @@ def create_payment_session():
             "quantity": 1,
         }],
         mode="payment",
-        success_url="http://192.168.54.149:5000/payments/success",
-        cancel_url="http://192.168.54.149:5000/payments/cancel",
+        success_url=url_for("payment.success", _external=True),
+        cancel_url=url_for("payment.cancel", _external=True),
         metadata={
             "reservation_id": reservation_id,
             "user_id": user_id
@@ -60,77 +60,6 @@ def cancel():
     return "Payment canceled", 200
 
 
-# @bp.route("/webhook", methods=["POST"])
-# def stripe_webhook():
-    # print('WEBHOOK CALLED')
-    # payload = request.get_data(as_text=True)
-    # sig_header = request.headers.get('Stripe-Signature')
-    # endpoint_secret = current_app.config["STRIPE_WEBHOOK_SECRET"]
-    # event = None
-
-    # print(f"Payload: {payload}")
-    # print(f"Signature Header: {sig_header}")
-    # print(f"Endpoint Secret: {endpoint_secret}")
-
-
-    # try:
-    #     event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-    # except ValueError as e:
-
-    #     print(f"Invalid payload: {e}")
-    #     # Payload invalide
-    #     return jsonify({"message": "Invalid payload"}), 400
-
-    # except stripe.error.SignatureVerificationError as e:
-
-    #     print(f"Invalid signature: {e}")
-    #     # Signature invalide
-    #     return jsonify({"message": "Invalid signature"}), 400
-
-    # print(f"Webhook event type: {event['type']}")
-    # # Gérer l'événement
-    # if event["type"] == "checkout.session.completed":
-    #     session = event["data"]["object"]
-
-    #     print(f"Session completed: {session}")
-
-    #     # Récupérer les détails de la session
-    #     reservation_id = session["metadata"]["reservation_id"]
-    #     user_id = session["metadata"]["user_id"]
-    #     amount = session["amount_total"] / 100  # Convertir en euros
-
-    #     # Enregistrer le paiement dans la base de données
-    #     payment = Payment(
-    #         reservation_id=reservation_id,
-    #         user_id=user_id,
-    #         amount=amount,
-    #         status="succeeded"
-    #     )
-    #     db.session.add(payment)
-    #     db.session.commit()
-
-    #     print(f"Payment recorded for reservation {reservation_id} by user {user_id}")
-
-    # return jsonify({"message": "Webhook received"}), 200
-
-
-#! /usr/bin/env python3.6
-# Python 3.6 or newer required.
-
-# import json
-# import os
-# import stripe
-# # This is your test secret API key.
-# stripe.api_key = 'sk_test_51QciYK8AXJVD0lBjbZHAwhscjFsvZiFtdXXmANGIcfJcOemRTSENQel3QWI19p1ZJAYwITNX6YFnUbsHmNlEfOQD001yEwVm75'
-
-# # Replace this endpoint secret with your endpoint's unique secret
-# # If you are testing with the CLI, find the secret by running 'stripe listen'
-# # If you are using an endpoint defined with the API or dashboard, look in your webhook settings
-# # at https://dashboard.stripe.com/webhooks
-# endpoint_secret = 'whsec_...'
-# from flask import Flask, jsonify, request
-
-# app = Flask(__name__)
 
 @bp.route('/webhook', methods=['POST'])
 def webhook():
