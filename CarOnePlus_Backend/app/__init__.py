@@ -54,6 +54,7 @@ def create_app(env="default"):
     from app.routes import incidents
     from app.routes import support
     from app.routes import insurance
+    from app.routes import home
 
     app.register_blueprint(auth)
     app.register_blueprint(vehicles)
@@ -64,5 +65,7 @@ def create_app(env="default"):
     app.register_blueprint(incidents)
     app.register_blueprint(support)
     app.register_blueprint(insurance)
+    app.register_blueprint(home)
+
 
     return app

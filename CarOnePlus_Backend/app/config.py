@@ -2,6 +2,10 @@
 import os
 from dotenv import load_dotenv
 
+uri = os.getenv("DATABASE_URL")
+if uri and uri.startswith("postgres://"):
+    os.environ["DATABASE_URL"] = uri.replace("postgres://", "postgresql://", 1)
+
 class Config:
     # Clés de sécurité
     SECRET_KEY = os.environ.get("SECRET_KEY", "fallback_dev_secret")

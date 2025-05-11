@@ -7,3 +7,4 @@ from .review import bp as reviews
 from .incidents import bp as incidents
 from .support import bp as support
 from .insurance import bp as insurance
+from .home import bp as home
