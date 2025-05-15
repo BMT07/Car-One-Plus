@@ -1,4 +1,5 @@
 from flask import Flask, current_app
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -67,5 +68,6 @@ def create_app(env="default"):
     app.register_blueprint(insurance)
     app.register_blueprint(home)
 
+    CORS(app)
 
     return app
